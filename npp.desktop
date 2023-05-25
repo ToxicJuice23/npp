@@ -1,0 +1,6 @@
+[Desktop Entry]
+Version=1.0
+Name=Notepad+
+Icon=/home/jujur/Documents/npp/npp.png
+Exec=/home/jujur/Documents/npp-build/npp
+Type=Office

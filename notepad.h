@@ -26,6 +26,7 @@ class NotePad : public QMainWindow
     Q_OBJECT
     QSpacerItem* spacer;
     QWidget* central_widget;
+    QLabel* about_l, *contact_l;
     QHBoxLayout* buttons;
     QGridLayout* main_layout;
     QTextEdit* editor;
@@ -55,5 +56,6 @@ private slots:
     void on_open_file_action_triggered();
     void on_save_file_action_triggered();
     void on_print_file_action_triggered();
+    void on_new_window_action_triggered();
 };
 #endif // NOTEPAD_H

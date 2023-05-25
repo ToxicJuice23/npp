@@ -70,8 +70,8 @@ NotePad::NotePad(QWidget *parent)
     open_b->setStyleSheet("border: none");
     undo_b->setStyleSheet("border: none");
     redo_b->setStyleSheet("border: none");
-
-
+    about_l = new QLabel("Npp stands for notepad+ and is a closed-source file-based lightweight text editor\nMade by solo developer Julien Renaud\nTips appreciated at mutepanda09@gmail.com");
+    contact_l = new QLabel("Contact me at:\n\tEmail: mutepanda09@gmail.com\n\tPhone number: 613-899-6962\n\tGithub: ToxicJuice23");
     setCentralWidget(central_widget);
 
     // object connects
@@ -92,7 +92,7 @@ NotePad::~NotePad()
 void NotePad::on_save_clicked() {
     qDebug("Save File");
     QFile file(current_file.c_str(), this);
-    file.open(QIODevice::ReadWrite);
+    file.open(QIODevice::WriteOnly);
     file.write(editor->toPlainText().toStdString().c_str());
     if (current_file == "/home/jujur/Untitled") {
         on_open_clicked();
@@ -104,6 +104,7 @@ void NotePad::on_new_clicked() {
     qDebug("new file");
     current_file = "/home/jujur/Untitled";
     editor->clear();
+    setWindowTitle(("Npp | " + current_file).c_str());
 }
 
 void NotePad::on_open_clicked() {
@@ -113,10 +114,11 @@ void NotePad::on_open_clicked() {
     QFile file(fn, this);
     file.open(QIODevice::ReadOnly);
     QString fc = file.read(100000);
-    if (!fc.isEmpty()) {
+    if (file.isOpen()) {
         editor->setText(fc);
         current_file = fn.toStdString();
     }
+    setWindowTitle(("Npp | " + current_file).c_str());
 }
 
 void NotePad::on_undo_clicked() {
@@ -142,6 +144,17 @@ void NotePad::generate_actions() {
     undo_action = new QAction("Undo");
     redo_action = new QAction("Redo");
 
+    // view buttons
+    full_screen_action = new QAction("Fullscreen");
+    minimize_action = new QAction("Minimize Window");
+
+    // help actions
+    about_action = new QAction("About");
+    contact_action = new QAction("Contact Us");
+
+    // window actions
+    open_new_window_action = new QAction("New Window");
+
     // add to menu
     file_b->addAction(new_file_action);
     file_b->addAction(open_file_action);
@@ -155,6 +168,13 @@ void NotePad::generate_actions() {
     edit_b->addAction(undo_action);
     edit_b->addAction(redo_action);
 
+    view_b->addAction(full_screen_action);
+    view_b->addAction(minimize_action);
+
+    help_b->addActions({about_action, contact_action});
+
+    window_b->addAction(open_new_window_action);
+
     connect(new_file_action, SIGNAL(triggered()), this, SLOT(on_new_file_action_triggered()));
     connect(open_file_action, SIGNAL(triggered()), this, SLOT(on_open_file_action_triggered()));
     connect(save_file_action, SIGNAL(triggered()), this, SLOT(on_save_file_action_triggered()));
@@ -166,6 +186,19 @@ void NotePad::generate_actions() {
     connect(paste_action, SIGNAL(triggered()), editor, SLOT(paste()));
     connect(cut_action, SIGNAL(triggered()), editor, SLOT(cut()));
     connect(select_all_action, SIGNAL(triggered()), editor, SLOT(selectAll()));
+
+    connect(full_screen_action, SIGNAL(triggered()), this, SLOT(showFullScreen()));
+    connect(minimize_action, SIGNAL(triggered()), this, SLOT(showMinimized()));
+
+    connect(about_action, SIGNAL(triggered()), about_l, SLOT(show()));
+    connect(contact_action, SIGNAL(triggered()), contact_l, SLOT(show()));
+
+    connect(open_new_window_action, SIGNAL(triggered()), this, SLOT(on_new_window_action_triggered()));
+}
+
+void NotePad::on_new_window_action_triggered() {
+    NotePad* w = new NotePad();
+    w->show();
 }
 
 void NotePad::on_new_file_action_triggered() {
